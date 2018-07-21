@@ -1,4 +1,6 @@
 class Api::V1::ProductsController < ApplicationController
+  protect_from_forgery with: :null_session
+
   def index
     @products = Product.all
     render json: @products
@@ -9,7 +11,12 @@ class Api::V1::ProductsController < ApplicationController
   end
 
   def create
-    @product = Product.create(product_params)
+    product = Product.new(product_params)
+       if product.save
+         render :nothing => true, :status => 201
+       else
+         render json: { errors: article.errors }, status: 422
+       end
   end
 
   def edit
